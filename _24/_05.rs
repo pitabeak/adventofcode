@@ -1,6 +1,5 @@
 use std::io;
 use std::collections::HashSet;
-use std::cmp::Ordering;
 
 pub fn main() {
 	let mut it = io::stdin().lines().map(|x| String::from(x.unwrap().trim()));
@@ -9,15 +8,19 @@ pub fn main() {
 		let a = i.split_once('|').unwrap();
 		d1.insert((a.0.parse().unwrap(),a.1.parse().unwrap()));
 	}
-	let lt = |x,y| d1.contains(&(x,y));
+	let ngt = |x,y| !d1.contains(&(y,x));
 	let mut z = 0;
 	let mut z2 = 0;
 	for i in it {
 		let mut a:Vec<i8> = i.split(',').map(|s| s.parse().unwrap()).collect();
-		if (1..a.len()).all(|i| lt(a[i-1],a[i])) {
+		if (1..a.len()).all(|i| (0..i).all(|j| ngt(a[j],a[i]))) {
 			z += a[a.len()/2] as i32;
 		} else {
-			a.sort_by(|&x,&y| if lt(x,y) {Ordering::Less} else {Ordering::Greater});
+			for i in 0..a.len()-1 {
+				let b = &a[i..];
+				let j = b.iter().position(|&x| b.iter().all(|&y| ngt(x,y))).unwrap();
+				if j > 0 { a.swap(i,i+j); }
+			}
 			z2 += a[a.len()/2] as i32;
 		}
 	}
