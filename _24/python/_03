@@ -1,0 +1,19 @@
+#!/usr/bin/python3
+import sys,re
+da = sys.stdin.read()
+z = 0
+z2 = 0
+f = True
+for i in re.finditer(r'mul\((\d+),(\d+)\)|(do\(\))|(don\'t\(\))',da):
+	x,y,p,q = i.group(1,2,3,4)
+	if x:
+		r = int(x)*int(y)
+		z += r
+		if f:
+			z2 += r
+	elif p:
+		f = True
+	else:
+		f = False
+print(z)
+print(z2)

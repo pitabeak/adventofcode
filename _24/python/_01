@@ -1,0 +1,24 @@
+#!/usr/bin/python3
+import sys
+d1 = []
+d2 = []
+ct = {}
+for i in sys.stdin:
+	x,y = [int(j) for j in i.split()]
+	d1.append(x)
+	d2.append(y)
+	if y in ct:
+		ct[y] += 1
+	else:
+		ct[y] = 1
+d1.sort()
+d2.sort()
+z = 0
+z2 = 0
+for i in range(len(d1)):
+	j = d1[i]
+	z = z + abs(j-d2[i])
+	if j in ct:
+		z2 += j * ct[j]
+print(z)
+print(z2)
