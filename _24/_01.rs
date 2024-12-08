@@ -1,19 +1,15 @@
 use std::io;
-use itertools::Itertools;
 use std::collections::HashMap;
 
 pub fn main() {
-	let mut d1 = Vec::new();
-	let mut d2 = Vec::new();
+	let mut d1:Vec<i32> = Vec::new();
+	let mut d2:Vec<i32> = Vec::new();
 	let mut ct:HashMap<i32,i32> = HashMap::new();
 	for i in io::stdin().lines() {
-		let i = i.unwrap();
-		let (x,y) = i.split_whitespace()
-			.map(|x| x.parse::<i32>().unwrap())
-			.collect_tuple::<(_,_)>().unwrap();
-		d1.push(x);
-		d2.push(y);
-		*ct.entry(y).or_default() += 1;
+		let a:Vec<_> = i.unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();
+		d2.push(a[1]);
+		d1.push(a[0]);
+		*ct.entry(a[1]).or_default() += 1;
 	}
 
 	d1.sort();
