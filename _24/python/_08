@@ -1,0 +1,49 @@
+#!/usr/bin/python3
+import sys
+
+da = {}
+r = 0
+wd = 0
+for i in sys.stdin:
+	c = 0
+	for j in i.strip():
+		if j!='.':
+			if not(j in da):
+				da[j] = []
+			da[j].append((c,r))
+		c += 1
+	wd = c
+	r += 1
+ht = r
+p1 = set()
+p2 = set()
+for fr in da.values():
+	for j in range(1,len(fr)):
+		for i in range(0,j):
+			a,b = fr[i]
+			c,d = fr[j]
+			da,db = c-a,d-b
+			p2.add((a,b))
+			p2.add((c,d))
+			f = True
+			while True:
+				c += da
+				d += db
+				if not(0<=c and c<wd and 0<=d and d<ht):
+					break
+				if f:
+					f = False
+					p1.add((c,d))
+				p2.add((c,d))
+			f = True
+			while True:
+				a -= da
+				b -= db
+				if not(0<=a and a<wd and 0<=b and b<ht):
+					break
+				if f:
+					f = False
+					p1.add((a,b))
+				p2.add((a,b))
+print(len(p1))
+print(len(p2))
