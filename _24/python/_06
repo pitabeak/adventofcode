@@ -1,0 +1,115 @@
+#!/usr/bin/python3
+import sys
+
+dc = []
+dr = []
+gx = 0
+gy = 0
+for y,i in enumerate(sys.stdin):
+	rw = []
+	dr.append(rw)
+	for x,j in enumerate(i.strip()):
+		if j == '#':
+			rw.append(x)
+			while len(dc)<=x:
+				dc.append([])
+			dc[x].append(y)
+		if j == '^':
+			gx = x
+			gy = y
+mx = len(dc)-1
+my = len(dr)-1
+
+vz = set()
+x = gx
+y = gy
+vz.add((x,y))
+while True:
+	i = sum(1 for k in dc[x] if k < y)
+	y1 = dc[x][i-1]+1 if i > 0 else 0
+	while y > y1:
+		y -= 1
+		vz.add((x,y))
+	if y == 0:
+		break
+	i = sum(1 for k in dr[y] if k < x)
+	x1 = dr[y][i]-1 if i < len(dr[y]) else mx
+	while x < x1:
+		x += 1
+		vz.add((x,y))
+	if x == mx:
+		break
+	i = sum(1 for k in dc[x] if k < y)
+	y1 = dc[x][i]-1 if i < len(dc[x]) else my
+	while y < y1:
+		y += 1
+		vz.add((x,y))
+	if y == my:
+		break
+	i = sum(1 for k in dr[y] if k < x)
+	x1 = dr[y][i-1]+1 if i > 0 else 0
+	while x > x1:
+		x -= 1
+		vz.add((x,y))
+	if x == 0:
+		break
+print(len(vz))
+
+def is_loop():
+	vz = set()
+	x = gx
+	y = gy
+	while True:
+		i = sum(1 for k in dc[x] if k < y)
+		if i == 0:
+			return False
+		y1 = dc[x][i-1]+1
+		if y != y1:
+			print('A '+str(x)+' '+str(y))
+			if (x,y) in vz:
+				return True
+			vz.add((x,y))
+		i = sum(1 for k in dr[y] if k < x)
+		if i == len(dr[y]):
+			return False
+		x1 = dr[y][i]-1
+		if x != x1:
+			print('B '+str(x)+' '+str(y))
+			if (x,y) in vz:
+				return True
+			vz.ad((x,y))
+		i = sum(1 for k in dc[x] if k < y)
+		if i == len(dc[x]):
+			return False
+		y1 = dc[x][i]-1
+		if y != y1:
+			print('C '+str(x)+' '+str(y))
+			if (x,y) in vz:
+				return True
+			vz.add((x,y))
+		i = sum(1 for k in dr[y] if k < x)
+		if i == 0:
+			return False
+		x1 = dr[y][i-1]+1
+		if x != x1:
+			print('D '+str(x)+' '+str(y))
+			if (x,y) in vz:
+				return True
+			vz.add((x,y))
+
+if is_loop():
+	print("A:")
+z = 0
+for y in range(my+1):
+	print(".",end='')
+	for x in range(mx+1):
+		if not(x in dr[y]):
+			ri = sum(1 for k in dr[y] if k < x)
+			ci = sum(1 for k in dc[x] if k < y)
+			dr[y].insert(ri,x)
+			dc[x].insert(ci,y)
+			if is_loop():
+				z += 1
+			dr[y].pop(ri)
+			dc[x].pop(ci)
+print(z)
