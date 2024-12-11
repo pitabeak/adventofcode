@@ -16,12 +16,13 @@ mod _07;
 mod _08;
 mod _09;
 mod _10;
+mod _11;
 
 fn main() {
 	let b = if env::args().len()>1 {
 		env::args().skip(1).map(|s| s.parse().unwrap()).collect()
 	} else {
-		vec![1,2,3,4,5,6,7,8,9,10]
+		(1..=11).collect::<Vec<usize>>()
 	};
 	let mut tr = io::stdin().is_terminal();
 	for i in b {
@@ -43,6 +44,7 @@ fn main() {
 			8 => { _08::solve(f) }
 			9 => { _09::solve(f) }
 			10 => { _10::solve(f) }
+			11 => { _11::solve(f) }
 			_ => todo!()
 		};
 		println!("\nDay {i} ({}ms)\n{p1}\n{p2}",tm.elapsed().as_millis());
