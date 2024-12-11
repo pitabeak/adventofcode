@@ -9,8 +9,11 @@ use std::time::Instant;
 mod _01;
 mod _02;
 mod _03;
+mod _04;
 mod _05;
 mod _06;
+mod _07;
+mod _08;
 mod _09;
 mod _10;
 
@@ -18,7 +21,7 @@ fn main() {
 	let b = if env::args().len()>1 {
 		env::args().skip(1).map(|s| s.parse().unwrap()).collect()
 	} else {
-		vec![1,2,3,5,6,9,10]
+		vec![1,2,3,4,5,6,7,8,9,10]
 	};
 	let mut tr = io::stdin().is_terminal();
 	for i in b {
@@ -33,8 +36,11 @@ fn main() {
 			1 => { _01::solve(f) }
 			2 => { _02::solve(f) }
 			3 => { _03::solve(f) }
+			4 => { _04::solve(f) }
 			5 => { _05::solve(f) }
 			6 => { _06::solve(f) }
+			7 => { _07::solve(f) }
+			8 => { _08::solve(f) }
 			9 => { _09::solve(f) }
 			10 => { _10::solve(f) }
 			_ => todo!()
