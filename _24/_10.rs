@@ -1,12 +1,11 @@
 // adventofcode.com 2024 day 10
 use std::io;
+use std::io::BufRead;
 use std::collections::HashSet;
-use std::time::Instant;
 
-pub fn main() {
-	let da = io::read_to_string(io::stdin()).unwrap();
+pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
+	let da = io::read_to_string(f).unwrap();
 	let da:Vec<_> = da.lines().map(|s| s.as_bytes()).collect();
-	let tm = Instant::now();
 	let mx = da[0].len()-1;
 	let my = da.len()-1;
 	let mut z = 0;
@@ -53,7 +52,5 @@ pub fn main() {
 			}
 		}
 	}
-	println!("({} ms)",tm.elapsed().as_millis());
-	println!("{z}");
-	println!("{z2}");
+	(z.to_string(),z2.to_string())
 }
