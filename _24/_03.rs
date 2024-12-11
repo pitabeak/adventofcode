@@ -1,8 +1,9 @@
 use std::io;
 use regex::Regex;
+use std::io::BufRead;
 
-pub fn main() {
-	let da = io::read_to_string(io::stdin()).unwrap();
+pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
+	let da = io::read_to_string(f).unwrap();
 	let re = Regex::new(r"mul\((\d+),(\d+)\)|(do)((?:n\'t)?)\(\)").unwrap();
 	let mut f = true;
 	let mut z = 0;
@@ -16,6 +17,5 @@ pub fn main() {
 			if f { z2 += x; }
 		}
 	}
-	println!("{z}");
-	println!("{z2}");
+	(z.to_string(),z2.to_string())
 }

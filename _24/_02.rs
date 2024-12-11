@@ -1,4 +1,4 @@
-use std::io;
+use std::io::BufRead;
 
 fn issafe(a: &Vec<i32>) -> bool {
 	let (n,x) = if a[1]>a[0] { (1,3) } else { (-3,-1) };
@@ -11,10 +11,10 @@ fn issafe(a: &Vec<i32>) -> bool {
 	true
 }
 
-pub fn main() {
+pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	let mut z = 0;
 	let mut z2 = 0;
-	for i in io::stdin().lines() {
+	for i in f.lines() {
 		let a:Vec<i32> = i.unwrap().split_whitespace().map(|x| x.parse().unwrap()).collect();
 		if issafe(&a) {
 			z += 1;
@@ -30,6 +30,5 @@ pub fn main() {
 			}
 		}
 	}
-	println!("{z}");
-	println!("{z2}");
+	(z.to_string(),z2.to_string())
 }

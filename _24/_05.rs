@@ -1,8 +1,8 @@
-use std::io;
 use std::collections::HashSet;
+use std::io::BufRead;
 
-pub fn main() {
-	let mut it = io::stdin().lines().map(|x| String::from(x.unwrap().trim()));
+pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
+	let mut it = f.lines().map(|x| String::from(x.unwrap().trim()));
 	let mut d1:HashSet<(i8,i8)> = HashSet::new();
 	for i in it.by_ref().take_while(|s| s.len() > 0) {
 		let a = i.split_once('|').unwrap();
@@ -24,6 +24,5 @@ pub fn main() {
 			z2 += a[a.len()/2] as i32;
 		}
 	}
-	println!("{z}");
-	println!("{z2}");
+	(z.to_string(),z2.to_string())
 }

@@ -1,4 +1,3 @@
-use std::io;
 use std::collections::HashSet;
 use std::io::BufRead;
 
@@ -135,8 +134,7 @@ impl Grid {
 	}
 }
 
-pub fn main() {
-	let mut grid = Grid::new(io::stdin().lock());
-	println!("{}",grid.count_pos());
-	println!("{}",grid.count_loop());
+pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
+	let mut grid = Grid::new(f);
+	(grid.count_pos().to_string(),grid.count_loop().to_string())
 }

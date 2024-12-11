@@ -1,7 +1,8 @@
 use std::io;
+use std::io::BufRead;
 
-pub fn main() {
-	let s = io::read_to_string(io::stdin()).unwrap();
+pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
+	let s = io::read_to_string(f).unwrap();
 	let s = s.trim().as_bytes();
 	let mut lf = 0;
 	let mut rt = s.len()+(s.len()&1);
@@ -31,15 +32,14 @@ pub fn main() {
 		z += rt/2*i;
 		i += 1;
 	}
-	println!("{z}");
 	let mut s = Vec::from(s);
 	let rx = s.len()+(s.len()&1)-2;
 	i = 0;
-	z = 0;
+	let mut z2 = 0;
 	for lf in (0..s.len()).step_by(2) {
 		if s[lf] < b'A' {
 			for _ in b'0'..s[lf] {
-				z += lf/2*i;
+				z2 += lf/2*i;
 				i += 1;
 			}
 		} else {
@@ -57,11 +57,11 @@ pub fn main() {
 			if x == 0 { i += (sp-b'0') as usize; break; }
 			s[rt] = b'A'+(x-b'0');
 			for _ in b'0'..x {
-				z += rt/2*i;
+				z2 += rt/2*i;
 				i += 1;
 			}
 			sp -= x-b'0';
 		}
 	}
-	println!("{z}");
+	(z.to_string(),z2.to_string())
 }
