@@ -38,11 +38,7 @@ impl Stones {
 pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	let da:Vec<usize> = io::read_to_string(f).unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();
 	let mut st = Stones::new();
-	let mut z = 0;
-	let mut z2 = 0;
-	for i in da {
-		z += st.count((25,i));
-		z2 += st.count((75,i));
-	}
+	let z:usize = da.iter().map(|&i| st.count((25,i))).sum();
+	let z2:usize = da.iter().map(|&i| st.count((75,i))).sum();
 	(z.to_string(),z2.to_string())
 }
