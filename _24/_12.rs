@@ -1,6 +1,5 @@
 use std::io::BufRead;
 use std::collections::HashMap;
-use std::collections::HashSet;
 
 pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	let mut da:Vec<Vec<usize>> = Vec::new();
@@ -46,8 +45,6 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 		for x in 0..=mx {
 			let p = da[y][x];
 			*ar.entry(p).or_default() += 1;
-			let j = 2*x+2;
-			let k = 2*y+2;
 			if !(y > 0 && da[y-1][x] == p) {
 				hz.entry(p).or_default().push((x,y));
 			}
@@ -64,15 +61,26 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	}
 	let z:usize = ar.keys().map(|k| ar[k]*(hz[k].len()+vt[k].len())).sum();
 	let z2:usize = ar.keys().map(|k| {
-		hz[k].sort();
 		let mut m = 0;
-		let mut x = 0;
-		let mut y = usize::MAX;
-		for (x1,y1) in hz[k] {
-			if !(y1 == y && x1 == x+1) { m += 1; }
+		let mut a:Vec<_> = hz[k].iter().map(|&(a,b)| (b,a)).collect();
+		a.sort();
+		println!("{a:?}");
+		let mut x = usize::MAX;
+		let mut y = 0;
+		for (x1,y1) in a {
+			if !(y1 == y+1 && x1 == x) { m += 1; }
 			x = x1; y = y1;
 		}
+		a = vt[k].to_vec();
+		a.sort();
+		println!("{a:?}");
+		let mut x = usize::MAX;
+		for (x1,y1) in a {
+			if !(y1 == y+1 && x1 == x) { m += 1; }
+			x = x1; y = y1;
+		}
+		println!("{m}");
 		ar[k]*m
-	});
+	}).sum();
 	(z.to_string(),z2.to_string())
 }
