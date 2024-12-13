@@ -38,49 +38,61 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	}
 	let mx = da[0].len()-1;
 	let my = da.len()-1;
-	let mut ar:HashMap<usize,usize> = HashMap::new();
-	let mut hz:HashMap<usize,Vec<(usize,usize)>> = HashMap::new();
-	let mut vt:HashMap<usize,Vec<(usize,usize)>> = HashMap::new();
+	let mut sd = vec![0;n];
+	let mut pm = vec![0;n];
+	let mut ar = vec![0;n];
 	for y in 0..=my {
+		let mut ra = false;
+		let mut rb = false;
 		for x in 0..=mx {
-			let p = da[y][x];
-			*ar.entry(p).or_default() += 1;
-			if !(y > 0 && da[y-1][x] == p) {
-				hz.entry(p).or_default().push((x,y));
+			let i = da[y][x];
+			ar[i] += 1;
+			if y > 0 && i == da[y-1][x] {
+				ra = false;
+			} else {
+				if !(ra && i == da[y][x-1]) {
+					sd[i] += 1;
+				}
+				pm[i] += 1;
+				ra = true;
 			}
-			if !(y < my && da[y+1][x] == p) {
-				hz.entry(p).or_default().push((x,y+1));
-			}
-			if !(x > 0 && da[y][x-1] == p) {
-				vt.entry(p).or_default().push((x,y));
-			}
-			if !(x < mx && da[y][x+1] == p) {
-				vt.entry(p).or_default().push((x+1,y));
+			if y < my && i == da[y+1][x] {
+				rb = false;
+			} else {
+				if !(rb && i == da[y][x-1]) {
+					sd[i] += 1;
+				}
+				pm[i] += 1;
+				rb = true;
 			}
 		}
 	}
-	let z:usize = ar.keys().map(|k| ar[k]*(hz[k].len()+vt[k].len())).sum();
-	let z2:usize = ar.keys().map(|k| {
-		let mut m = 0;
-		let mut a:Vec<_> = hz[k].iter().map(|&(a,b)| (b,a)).collect();
-		a.sort();
-		println!("{a:?}");
-		let mut x = usize::MAX;
-		let mut y = 0;
-		for (x1,y1) in a {
-			if !(y1 == y+1 && x1 == x) { m += 1; }
-			x = x1; y = y1;
+	for x in 0..=mx {
+		let mut ra = false;
+		let mut rb = false;
+		for y in 0..=my {
+			let i = da[y][x];
+			if x > 0 && i == da[y][x-1] {
+				ra = false;
+			} else {
+				if !(ra && i == da[y-1][x]) {
+					sd[i] += 1;
+				}
+				pm[i] += 1;
+				ra = true;
+			}
+			if x < mx && i == da[y][x+1] {
+				rb = false;
+			} else {
+				if !(rb && i == da[y-1][x]) {
+					sd[i] += 1;
+				}
+				pm[i] += 1;
+				rb = true;
+			}
 		}
-		a = vt[k].to_vec();
-		a.sort();
-		println!("{a:?}");
-		let mut x = usize::MAX;
-		for (x1,y1) in a {
-			if !(y1 == y+1 && x1 == x) { m += 1; }
-			x = x1; y = y1;
-		}
-		println!("{m}");
-		ar[k]*m
-	}).sum();
+	}
+	let z:usize = (0..ar.len()).map(|i| ar[i]*pm[i]).sum();
+	let z2:usize = (0..ar.len()).map(|i| ar[i]*sd[i]).sum();
 	(z.to_string(),z2.to_string())
 }
