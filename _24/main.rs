@@ -17,6 +17,8 @@ mod _08;
 mod _09;
 mod _10;
 mod _11;
+mod _12;
+mod _13;
 
 fn main() {
 	let b = if env::args().len()>1 {
@@ -45,6 +47,8 @@ fn main() {
 			9 => { _09::solve(f) }
 			10 => { _10::solve(f) }
 			11 => { _11::solve(f) }
+			12 => { _12::solve(f) }
+			13 => { _13::solve(f) }
 			_ => todo!()
 		};
 		println!("\nDay {i} ({}ms)\n{p1}\n{p2}",tm.elapsed().as_millis());
