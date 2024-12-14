@@ -1,0 +1,24 @@
+use std::io::BufRead;
+use std::collections::HashMap;
+
+pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
+	let mut d1:Vec<i32> = Vec::new();
+	let mut d2:Vec<i32> = Vec::new();
+	let mut ct:HashMap<i32,i32> = HashMap::new();
+	for i in f.lines() {
+		let a:Vec<_> = i.unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();
+		d2.push(a[1]);
+		d1.push(a[0]);
+		*ct.entry(a[1]).or_default() += 1;
+	}
+
+	d1.sort();
+	d2.sort();
+	let mut z = 0;
+	let mut z2 = 0;
+	for i in 0..d1.len() {
+		z += (d1[i] - d2[i]).abs();
+		z2 += d1[i] * *ct.entry(d1[i]).or_default();
+	}
+	(z.to_string(),z2.to_string())
+}
