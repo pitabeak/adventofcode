@@ -2,43 +2,48 @@ use std::io::BufRead;
 use std::io;
 use std::collections::HashMap;
 
-struct Stones {
+struct Memoized {
 	mm:HashMap<(usize,usize),usize>
 }
 
-impl Stones {
-	pub fn new() -> Stones {
-		Stones{ mm:HashMap::new() }
+impl Memoized {
+	pub fn new() -> Memoized {
+		let mut z = Memoized{ mm:HashMap::new() };
+		z.mm.insert((0,1),1);	// specific trivial cases
+		z
 	}
 
-	pub fn count(&mut self, (n,k):(usize,usize)) -> usize {
-		if n == 0 {				//the terminating case, put here to reduce memory usage
-			return 1;
-		}
-		if let Some(&v) = self.mm.get(&(n,k)) {
-			return v;
-		}
-		let v =
-			if k == 0 {			//find the result and store it
-				self.count((n-1,1))
-			} else {
-				let j = k.ilog10();	//number of digits - 1
+	pub fn eval(&mut self, (k,n):(usize,usize)) -> usize {
+		if n == 0 {				// class of trivial cases
+			1
+		} else if let Some(&v) = self.mm.get(&(k,n)) {
+			v
+		} else {
+			let v = if k > 0 {	// compute value
+				let j = k.ilog10();
 				if j%2 == 0 {
-					self.count((n-1,k*2024))
+					self.eval((k*2024,n-1))
 				} else {
-					let j = 10usize.pow((j+1)/2);
-					self.count((n-1,k/j)) + self.count((n-1,k%j))
+					let j = 10usize.pow(j/2+1);
+					self.eval((k/j,n-1)) + self.eval((k%j,n-1))
 				}
+			} else {
+				self.eval((1,n-1))
 			};
-		self.mm.insert((n,k),v);
-		v
+			self.mm.insert((k,n),v);
+			v
+		}
 	}
 }
 
 pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	let da:Vec<usize> = io::read_to_string(f).unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();
-	let mut st = Stones::new();
-	let z:usize = da.iter().map(|&i| st.count((25,i))).sum();
-	let z2:usize = da.iter().map(|&i| st.count((75,i))).sum();
+	let mut mm = Memoized::new();
+	let mut z = 0;
+	let mut z2 = 0;
+	for i in da {
+		z += mm.eval((i,25));
+		z2 += mm.eval((i,75));
+	}
 	(z.to_string(),z2.to_string())
 }

@@ -8,7 +8,6 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	let mut z = 0;
 	let mut z2 = 0i64;
 	loop {
-		println!(".");
 		let a:Vec<Vec<i64>> = (0..3).map(|_| re.find_iter(&it.next().unwrap())
 			.map(|m| m.as_str().parse().unwrap()).collect()).collect();
 		let ax = a[0][0];
