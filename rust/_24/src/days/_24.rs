@@ -15,10 +15,9 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 		else { if g { g = false; h = 0; } y |= b<<h; }
 		h += 1;
 	}
-	let mut oi = HashSet::new();
-	let mut oo = HashSet::new();
 	let mut ai = HashSet::new();
 	let mut ao = HashSet::new();
+	let mut xo = HashSet::new();
 	while let Some(Ok(s)) = it.next() {
 		let a:Vec<_> = s.split(' ').collect();
 		let xy = a[0].starts_with('x') || a[0].starts_with('y');
@@ -26,13 +25,14 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 		match a[1] {
 			"XOR" => {
 				if xy {
-					if zz { println!("{s}"); }
+					if zz && a[4] != "z00" { print!("{} ",a[4]); }
+					xo.insert(a[4].to_string());
 				} else {
-					if !zz { println!("{s}"); }
+					if !zz { print!("{} ",a[4]); }
 				}
 			}
 			"AND" => {
-				if zz { println!("{s}"); }
+				if zz { print!("{} ",a[4]); }
 				if !xy {
 					ai.insert(a[0].to_string());
 					ai.insert(a[2].to_string());
@@ -40,19 +40,19 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 				ao.insert(a[4].to_string());
 			}
 			"OR" => {
-				if zz { println!("{s}"); }
-				oi.insert(a[0].to_string());
-				oi.insert(a[2].to_string());
-				oo.insert(a[4].to_string());
+				if zz && a[4] != "z45" { print!("{} ",a[4]); }
 			}
 			_ => {}
 		}
 	}
-	for x in oo {
-		if !ai.contains(&x) { println!("+{x}"); }
+	for x in xo {
+		if !ai.contains(&x) && x != "z00" { print!("{x} "); }
 	}
 	for x in ao {
-		if !oi.contains(&x) { println!("-{x}"); }
+		if ai.contains(&x) { print!("*{x} "); }
 	}
-	(0.to_string(),0.to_string())
+	println!("");
+	println!("(The answer to part 2 is a list of the above\nwith only one of the marked ones.)");
+	let z2 = "gbs,hwq,thm,wrm,wss,z08,z22,z29";
+	(0.to_string(),z2.to_string())
 }
