@@ -36,13 +36,14 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 					all(|j| s.contains(v[w[j]])))) {
 					g = true;
 					sl += 1;
-					let mut a:Vec<_> = v.iter().map(|&&(a,b)| String::from_utf8_lossy(&[a,b]).to_string()).collect();
+					let mut a:Vec<_> = w.iter().map(|&i| v[i]).
+						map(|&(a,b)| String::from_utf8_lossy(&[a,b]).to_string()).collect();
 					a.insert(0,String::from_utf8_lossy(&[x.0,x.1]).to_string());
 					z2 = a.join(",");
+					break;
 				}
 			}
 		}
 	}
-	println!("{}",pr.iter().map(|(_,v)| v.len()).max().unwrap());
 	(z.to_string(),z2.to_string())
 }
