@@ -50,8 +50,9 @@ fn main() {
 			Box::new(BufReader::new(io::stdin().lock()))
 		};
 		let tm = Instant::now();
+		println!("\n --- Day {i} ---");
 		let (p1,p2) = a[i-1](f);
-		println!("\nDay {i} ({}ms)\n{p1}\n{p2}",tm.elapsed().as_millis());
+		println!("({}ms)\n\n{p1}\n{p2}",tm.elapsed().as_millis());
 		tr = true;
 	}
 }
