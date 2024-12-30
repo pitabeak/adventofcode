@@ -59,25 +59,44 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 			}
 		}
 	}
-	let z:usize = ar.keys().map(|k| ar[k]*(hz[k].len()+vt[k].len())).sum();
-	let z2:usize = ar.keys().map(|k| {
-		let mut m = 0;
-		let mut a:Vec<_> = hz[k].iter().map(|&(a,b)| (b,a)).collect();
-		a.sort();
-		let mut x = usize::MAX;
-		let mut y = 0;
-		for (x1,y1) in a {
-			if !(y1 == y+1 && x1 == x) { m += 1; }
-			x = x1; y = y1;
+	let z:usize = ar.iter().map(|(i,n)| n*(hz[i].len()+vt[i].len())).sum();
+	let mut sd:HashMap<usize,usize> = HashMap::new();
+	for y in 0..=my {
+		let mut a = false;
+		let mut b = false;
+		for x in 0..=mx {
+			if y==0 || da[y][x]!=da[y-1][x] {
+				if !a || da[y][x]!=da[y][x-1] {
+					*sd.entry(da[y][x]).or_default() += 1;
+					a = true;
+				}
+			} else { a = false; }
+			if y==my || da[y][x]!=da[y+1][x] {
+				if !b || da[y][x]!=da[y][x-1] {
+					*sd.entry(da[y][x]).or_default() += 1;
+					b = true;
+				}
+			} else { b = false; }
 		}
-		a = vt[k].to_vec();
-		a.sort();
-		let mut x = usize::MAX;
-		for (x1,y1) in a {
-			if !(y1 == y+1 && x1 == x) { m += 1; }
-			x = x1; y = y1;
+	}
+	for x in 0..=mx {
+		let mut a = false;
+		let mut b = false;
+		for y in 0..=my {
+			if x==0 || da[y][x]!=da[y][x-1] {
+				if !a || da[y][x]!=da[y-1][x] {
+					*sd.entry(da[y][x]).or_default() += 1;
+					a = true;
+				}
+			} else { a = false; }
+			if x==mx || da[y][x]!=da[y][x+1] {
+				if !b || da[y][x]!=da[y-1][x] {
+					*sd.entry(da[y][x]).or_default() += 1;
+					b = true;
+				}
+			} else { b = false; }
 		}
-		ar[k]*m
-	}).sum();
+	}
+	let z2:usize = sd.iter().map(|(i,n)| n*ar[i]).sum();
 	(z.to_string(),z2.to_string())
 }

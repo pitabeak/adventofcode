@@ -65,7 +65,7 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 			break;
 		}
 		let mut n = *np.unwrap();
-		z = n;
+		if j == fr { z = n; }
 		let mut u = wd;
 		let mut v = wd;
 		pt.clear();

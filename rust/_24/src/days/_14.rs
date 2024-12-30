@@ -33,7 +33,6 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 			}
 		}
 		let mp:HashSet<&[i32;2]> = HashSet::from_iter(po.iter());
-		if mp.len()==po.len() { println!("{j}"); }
 		if j == 8280 { break; }
 	}
 	/*
