@@ -1,7 +1,5 @@
 use std::io::BufRead;
 use regex::Regex;
-//use std::str::from_utf8;
-//use std::time::Instant;
 use std::collections::HashSet;
 
 pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
@@ -16,9 +14,9 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 		sp.push([a[2],a[3]]);
 	}
 	let mut qu = [0;4];
-	//let mut tm = Instant::now();
+	let mut m = 0;
+	let mut z2 = 0;
 	for j in 1.. {
-		//if tm.elapsed().as_secs() > 1 { println!("({j})"); tm = Instant::now(); }
 		for i in 0..po.len() {
 			po[i][0] = (po[i][0] + wd + sp[i][0])%wd;
 			po[i][1] = (po[i][1] + ht + sp[i][1])%ht;
@@ -33,19 +31,11 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 			}
 		}
 		let mp:HashSet<&[i32;2]> = HashSet::from_iter(po.iter());
-		if j == 8280 { break; }
+		if mp.len() == po.len() {
+			m += 1;
+			if m==2 { z2 = j; break; }
+		}
 	}
-	/*
-	//I haven't solved the second part
-	//a clue to it is that no two robots are stacked on a tile
-	let mut mp:Vec<_> = (0..ht).map(|_| vec![b'.';wd as usize]).collect();
-	for [x,y] in po {
-		let x = x as usize;
-		let y = y as usize;
-		mp[y][x] = b'#';
-	}
-	for s in mp { println!("{}",from_utf8(&s).unwrap()); }
-	*/
 	let z:i32 = qu.iter().product();
-	(z.to_string(),8280.to_string())
+	(z.to_string(),z2.to_string())
 }
