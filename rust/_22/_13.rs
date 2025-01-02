@@ -1,32 +1,45 @@
 use std::io::BufRead;
-use serde_json::Value;
+use serde_json;
+use serde::{Serialize,Deserialize};
 use std::cmp::Ordering;
 
-fn compare(a:&Value,b:&Value) -> Ordering {
-	match a {
-		Value::Number(x) => {
-			match b {
-				Value::Number(y) => x.as_u64().cmp(&y.as_u64()),
-				Value::Array(_) => compare(&Value::Array(vec![a.clone()]),b),
-				_ => panic!()
-			}
-		}
-		Value::Array(p) => {
-			match b {
-				Value::Number(_) => compare(a,&Value::Array(vec![b.clone()])),
-				Value::Array(q) => {
-					for i in 0..p.len().min(q.len()) {
-						let z = compare(&p[i],&q[i]);
-						if z.is_ne() { return z; }
-					}
-					p.len().cmp(&q.len())
-				}
-				_ => panic!()
-			}
-		}
-		_ => panic!()
-	}
+#[derive(Serialize,Deserialize,Clone,Debug)]
+#[serde(untagged)]
+enum Value {
+	Number(u8),
+	Array(Vec<Value>)
 }
+
+impl Ord for Value {
+    fn cmp(&self, other: &Self) -> Ordering {
+		match (self,other) {
+			(Value::Number(x),Value::Number(y)) => x.cmp(&y),
+			(Value::Number(_),Value::Array(_)) => Value::Array(vec![self.clone()]).cmp(other),
+			(Value::Array(_),Value::Number(_)) => self.cmp(&Value::Array(vec![other.clone()])),
+			(Value::Array(p),Value::Array(q)) => {
+				for i in 0..p.len().min(q.len()) {
+					let z = p[i].cmp(&q[i]);
+					if z.is_ne() { return z; }
+				}
+				p.len().cmp(&q.len())
+			}
+		}
+    }
+}
+
+impl PartialOrd for Value {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for Value {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other).is_eq()
+    }
+}
+
+impl Eq for Value {}
 
 pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	let mut z = 0;
@@ -36,16 +49,16 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 		if !s.is_empty() {
 			a.push(serde_json::from_str::<Value>(&s).unwrap());
 			let i = a.len();
-			if i%2==0 && compare(&a[i-2],&a[i-1]).is_lt() {
+			if i%2==0 && a[i-2]<a[i-1] {
 				z += i/2;
 			}
 		}
 	}
-	let x = serde_json::from_str::<Value>("[[2]]").unwrap();
-	let y = serde_json::from_str::<Value>("[[6]]").unwrap();
+	let x:Value = serde_json::from_str("[[2]]").unwrap();
+	let y:Value = serde_json::from_str("[[6]]").unwrap();
 	a.push(x.clone());
 	a.push(y.clone());
-	a.sort_by(|a,b| compare(&a,&b));
+	a.sort();
 	let z2 = (a.iter().position(|t| t==&x).unwrap() + 1) * (a.iter().position(|t| t==&y).unwrap() + 1);
 	(z.to_string(),z2.to_string())
 }
