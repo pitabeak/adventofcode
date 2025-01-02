@@ -3,42 +3,41 @@ use cached::proc_macro::cached;
 
 fn pos(b:u8) -> (usize,usize) {
 	let i = b"789456123_0A<v>".iter().position(|&x| x==b).unwrap();
-	(i/3,i%3)
-}
-
-fn path(a:u8,b:u8) -> Vec<u8> {
-	let (y1,x1) = pos(a);
-	let (y2,x2) = pos(b);
-	const z:&str = "";
-	let s = format!("{z:><0$}{z:v<1$}{z:0<2$}{z:<<3$}",
-		x2.checked_sub(x1).unwrap_or_default(),
-		y2.checked_sub(y1).unwrap_or_default(),
-		y1.checked_sub(y2).unwrap_or_default(),
-		x1.checked_sub(x2).unwrap_or_default());
-	let mut s = s.as_bytes().to_vec();
-	if !(y1==3 && x2==0 || y2==3 && x1==0) {
-		let l = s.len();
-		for i in 0..l/2 {
-			s.swap(i,l-1-i);
-		}
-	}
-	s
+	(i%3,i/3)
 }
 
 #[cached]
-fn size(s:Vec<u8>,d:i32) -> usize {
-	let l = s.len();
-	if d<0 { return l+1; }
-	let mut r = 0;
-	if l > 0 {
-		r += size(path(b'A',s[0]),d-1) + size(path(s[l-1],b'A'),d-1);
-		for i in 1..l {
-			r += size(path(s[i-1],s[i]),d-1);
-		}
+fn find(a:u8,b:u8,m:u8) -> usize {
+	if a==b { return 1; }
+	let (x1,y1) = pos(a);
+	let (x2,y2) = pos(b);
+	if m==0 { return x1.abs_diff(x2) + y1.abs_diff(y2) + 1; }
+	//the order here is important, but I don't know why
+	let (c,i,d,j) = if x1==0 && y2==3 {
+		if y2>y1 { (b'>',x2,b'v',y2-y1) }
+		else { (b'>',x2,b'0',y1-y2) }
+	} else if x2==0 && y1==3 {
+		if y2>y1 { (b'v',y2-y1,b'<',x1) }
+		else { (b'0',y1-y2,b'<',x1) }
+	} else if x2>x1 {
+		if y2>y1 { (b'v',y2-y1,b'>',x2-x1) }
+		else { (b'0',y1-y2,b'>',x2-x1) }
 	} else {
-		r += size(path(b'A',b'A'),d-1);
+		if y2>y1 { (b'<',x1-x2,b'v',y2-y1) }
+		else { (b'<',x1-x2,b'0',y1-y2) }
+	};
+	let mut f = b'A';
+	let mut z = 0;
+	for _ in 0..i {
+		z += find(f,c,m-1);
+		f = c;
 	}
-	r
+	for _ in 0..j {
+		z += find(f,d,m-1);
+		f = d;
+	}
+	z += find(f,b'A',m-1);
+	z
 }
 
 pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
@@ -46,12 +45,21 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	let mut z2 = 0;
 	for s in f.lines() {
 		let s = s.unwrap();
-		let s = s.strip_suffix("A").unwrap();
-		let n = s.parse::<usize>().unwrap();
-		z += n * size(s.as_bytes().to_vec(),2);
-		z2 += n * size(s.as_bytes().to_vec(),25);
+		let n = s.strip_suffix("A").unwrap().parse::<usize>().unwrap();
+		let mut r = 0;
+		let mut f = b'A';
+		for &b in s.as_bytes() {
+			r += find(f,b,2);
+			f = b;
+		}
+		z += r * n;
+		r = 0;
+		f = b'A';
+		for &b in s.as_bytes() {
+			r += find(f,b,25);
+			f = b;
+		}
+		z2 += r * n;
 	}
-	println!("(I couldn't wrap my head around this problem, so this solution is copied from 4HbQ's\npython answer on the reddit aoc solutions thread, translated to rust.)");
-
 	(z.to_string(),z2.to_string())
 }
