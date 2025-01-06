@@ -17,9 +17,9 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 		}
 		a.push(b.to_vec());
 	}
-	xm -= 1;
-	xx += 1;
 	yx += 2;
+	xm = xm.min(500-yx);
+	xx = xx.max(500+yx);
 	let mut mp:Vec<_> = (0..yx).map(|_| vec![false;(xx-xm+1) as usize]).collect();
 	mp.push(vec![true;(xx-xm+1) as usize]);
 	for b in a {
@@ -41,7 +41,7 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	let mut y = 0usize;
 	let mut n = 1;
 	let mut z = None;
-	let mut z2 = 0;
+	let z2;
 	loop {
 		if !mp[y+1][x] {
 			y += 1;
@@ -53,7 +53,7 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 			x += 1;
 		} else {
 			if z.is_none() && y==(yx-1) as usize {
-				z = Some(n);
+				z = Some(n-1);
 			}
 			mp[y][x] = true;
 			x = (500-xm) as usize;
