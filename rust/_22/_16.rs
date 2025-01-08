@@ -42,10 +42,55 @@ pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	}
 	let nz:Vec<_> = (0..da.len()).filter(|&i| da[i][0]!=0).collect();
 	let nk:Vec<_> = nz.iter().
-		map(|&y| { let mut w:Vec<_> = nz.iter().map(|&x| wk[y][x]).collect(); w.insert(0,da[y][0]); w }).
+		map(|&y| { let mut w:Vec<_> = nz.iter().map(|&x| wk[y][x]+1).collect(); w.insert(0,da[y][0]); w }).
 		collect();
-	let sk:Vec<_> = nz.iter().map(|&x| wk[st][x]).collect();
-	println!("{sk:?}");
-	println!("{nk:?}");
-	(0.to_string(),0.to_string())
+	let sk:Vec<_> = nz.iter().map(|&x| wk[st][x]+1).collect();
+	
+	let mut z = 0;
+	const M:usize = 30;
+	let mut qu = Vec::new();
+	for i in 0..sk.len() {
+		let m = sk[i];
+		let p = (M-m)*nk[i][0];
+		qu.push((p,m,i,1<<i));
+	}
+	while let Some((p,m,i,b)) = qu.pop() {
+		z = z.max(p);
+		for j in 0..sk.len() {
+			if b&(1<<j)==0 && m+nk[i][j+1]<M {
+				let n = m+nk[i][j+1];
+				let q = p+(M-n)*nk[j][0];
+				qu.push((q,n,j,b|(1<<j)));
+			}
+		}
+	}
+
+	let mut z2 = 0;
+	const M2:usize = 26;
+	let mut qu = Vec::new();
+	for i in (0..sk.len()).step_by(2) {
+		let m = sk[i];
+		let p = (M2-m)*nk[i][0];
+		qu.push((p,m,i,1<<i,true));
+	}
+	while let Some((p,m,i,b,u)) = qu.pop() {
+		z2 = z2.max(p);
+		for j in 0..sk.len() {
+			if b&(1<<j)==0 && m+nk[i][j+1]<M2 {
+				let n = m+nk[i][j+1];
+				let q = p+(M2-n)*nk[j][0];
+				qu.push((q,n,j,b|(1<<j),u));
+			}
+		}
+		if u {
+			for j in (1..sk.len()).step_by(2) {
+				if b&(1<<j)==0 {
+					let n = sk[j];
+					let q = p+(M2-n)*nk[j][0];
+					qu.push((q,n,j,b|(1<<j),false));
+				}
+			}
+		}
+	}
+	(z.to_string(),z2.to_string())
 }
