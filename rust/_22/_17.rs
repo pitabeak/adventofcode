@@ -47,12 +47,6 @@ impl Board {
 	}
 }
 
-enum Form {
-	First(usize),
-	Second(usize,usize,usize),
-	Third()
-}
-
 pub fn solve(f:Box<dyn BufRead>) -> (String,String) {
 	let p1 = 2022;
 	let p2 = 1_000_000_000_000u64;
